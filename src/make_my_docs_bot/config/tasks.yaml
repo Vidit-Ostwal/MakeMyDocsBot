@@ -1,0 +1,301 @@
+analyze_branch_documentation_changes_task:
+  description: >
+    Analyze the specific documentation file at {file_path} in branch {branch_name} to identify all content changes and modifications. The tool requires the branch name and changed file path as input and will automatically:
+
+    1. Connect to the GitHub repository 
+    2. Analyze all changes in the branch
+    3. Extract metadata about English documentation modifications
+    4. Return structured data about changed files and sections
+
+    Simply call your custom tool with {branch_name} and {file_path} and it will provide comprehensive analysis results showing exactly what documentation content has been modified, including file paths, section titles, line numbers, and the actual changed content. Analyze the outcome of the tool and then make the expected format result.
+    Your response is essentail for next agents.
+  expected_output: >
+    A structured JSON object showing the analysis of the specific file at {file_path}, it will be a list of sections changed in this particular file {file_path}:
+    ```json
+    {
+      "SECTIONS_CHANGED": [
+        {
+            "level": 1 / 2 / 3 / 4,
+            "title": "The title / heading of the section changed",
+            "context": "New context",
+            "full_context_flag": True / False
+        }
+      ]
+    }
+    ```
+
+    The output should contain:
+    - **SECTIONS_CHANGED**: Object with list of changed sections
+
+    Each changed section should include:
+    - **level**: The level of the changed (Title, Sub-Title, Heading/ Sub-Heading)
+    - **title**: The section title/heading text
+    - **context**: The actual modified context from that section
+    - **full_context_flag**: Whether a part of the section is being changed or complete sections
+
+    Provide comprehensive analysis of all modifications within the specified file.
+  agent: documentation_change_analyzer
+
+
+validate_translation_file_structure_task:
+  description: >
+    Perform comprehensive index mapping and structural validation between the English source file and its Korean and Portuguese - Brazil translation counterparts. You will:
+
+    1. **Analyze source file structure** from the English documentation changed file {file_path}
+    2. **Map section indexes** between English and Korean, Portuguese-Brazil files using your custom index mapping tools
+    3. **Validate structural consistency** including:
+      - Section hierarchy levels (H1, H2, H3, etc.)
+      - Section titles and their positioning
+      - Overall document structure alignment
+      - Index mapping accuracy between source and translation files
+    4. **Identify structural discrepancies** such as:
+      - Missing sections in Korean, Portuguese (Brazil) files
+      - Mismatched section hierarchies
+      - Incorrect index mappings
+      - Inconsistent document organization
+    5. **Auto-correct structure issues** using your read-write tools when discrepancies are found:
+      - Add missing sections to Korean files and Portuguese (Brazil)
+      - Adjust section hierarchies to match source
+      - Fix index mapping inconsistencies
+      - Ensure structural parity across languages
+
+    Use your custom tools to perform detailed index mapping analysis and structural validation. If any structural issues are detected, automatically correct them to ensure the Korean files and Portuguese Brazil maintain perfect structural alignment with the English source files.
+
+  expected_output: >
+    A comprehensive structural validation report including:
+
+    ```json
+    {
+      "structural_analysis": {
+        "source_file": "{file_path}",
+        "korean_counterpart": "docs/ko/corresponding/file.mdx",
+        "structure_match_status": "validated|corrected|failed"
+      },
+      "index_mapping_results": {
+        "total_sections_mapped": 5,
+        "matching_sections": 4,
+        "missing_sections": 1,
+        "mismatched_hierarchies": 0,
+        "index_mapping_accuracy": "80%"
+      },
+      "structural_corrections_applied": [
+        {
+          "correction_type": "missing_section_added",
+          "section_title": "Configuration Steps",
+          "hierarchy_level": 2,
+          "position": "line 45",
+          "status": "success"
+        }
+      ],
+      "validation_summary": {
+        "files_analyzed": 2,
+        "corrections_needed": 1,
+        "corrections_applied": 1,
+        "final_structure_status": "aligned",
+        "ready_for_translation": true
+      },
+      "korean_files_structure_validated": true,
+      "translation_workflow_ready": true
+    }
+    ```
+
+    The report should confirm that:
+    - **Structural consistency** is maintained between English and Korean files
+    - **Index mapping** is accurate and complete  
+    - **Any corrections** have been successfully applied
+    - **Translation workflow** can proceed with confidence
+    - **Korean files** are properly structured to receive translation updates
+
+
+korean_documentation_translator_task:
+  description: >
+    Process the English documentation changes from the documentation_change_analyzer agent and generate structured Korean translation updates. You will:
+
+    1. **Use your translation mapping tool** with the {file_path} and SECTIONS_CHANGED list one for each object in the list to get releavant sections indexing
+    2. **Match sections** between English changes (from SECTIONS_CHANGED) and Korean files using section title and context
+    3. **Generate Korean translations** of the changed English content
+    4. **Produce structured output** with exact line ranges and replacement content
+     
+    Your translation mapping tool will provide the releavnt sections information with the existing context. Use this to identify which Korean sections correspond to the changed English sections.
+
+    **Input Data Structure:**
+    ```json
+    {
+      "SECTIONS_CHANGED": [
+        {
+            "level": 1 / 2 / 3 / 4,
+            "title": "The title / heading of the section changed",
+            "context": "New context",
+            "full_context_flag": True / False
+        }
+      ]
+    }
+    ```
+
+    Call your tool with the each object in the sections_changed to get relevant Korean file indexing and mapping, understand the result of the tool and your input, match and translate the sections.
+    You will need to call the tool multiple times one each for items in sections_changed list
+  expected_output: >
+    A structured JSON array showing Korean files and their required updates:
+
+    ```json
+    [
+        {
+          "FILE_PATH": file_path_1,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1,
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "Korean translation of the Configuration Steps section content..." 
+        },
+        {
+          "FILE_PATH": file_path_2,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1, 
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "Korean translation of the What is Crew Studio section content..."
+        },
+        {
+          "FILE_PATH": file_path_3,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1, 
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "Korean translation of the Default Embedding section content..."
+        }
+    ]
+    ```
+    Where 
+    FILE_PATH : File which basically will be getting changed
+    CONTENT_TO_BE_DELETED_START_LINE : This basically will represent the line number from which data will be erased
+    CONTENT_TO_BE_DELETED_END_LINE : This basically will represent the line number till which data will be erased
+    NEW_CONTENT : This will represent the new content which needs to be added 
+
+    Each entry shows the Korean file path with an array of sections that need updates, including the exact line ranges to replace and the new Korean translated content.
+  agent: korean_translator_agent
+  context: [analyze_branch_documentation_changes_task]
+
+
+portuguese_brazil_documentation_translator_task:
+  description: >
+    Process the English documentation changes from the documentation_change_analyzer agent and generate structured Portuguese (Brazil) translation updates. You will:
+
+    1. **Use your translation mapping tool** with the {file_path} and SECTIONS_CHANGED list one for each object in the list to get releavant sections indexing
+    2. **Match sections** between English changes (from SECTIONS_CHANGED) and Portuguese Brazil files using section title and context
+    3. **Generate Portuguese (Brazil) translations** of the changed English content
+    4. **Produce structured output** with exact line ranges and replacement content
+
+
+    Your translation mapping tool will provide the releavnt sections information with the existing context. Use this to identify which Portuguese (Brazil) sections correspond to the changed English sections.
+
+    **Input Data Structure:**
+    ```json
+    {
+      "SECTIONS_CHANGED": [
+        {
+            "level": 1 / 2 / 3 / 4,
+            "title": "The title / heading of the section changed",
+            "context": "New context",
+            "full_context_flag": True / False
+        }
+      ]
+    }
+    ```
+
+    Call your tool with the each object in the sections_changed to get relevant Portuguese (Brazil) file indexing and mapping, understand the result of the tool and your input, match and translate the sections.
+    You will need to call the tool multiple times one each for items in sections_changed list
+  expected_output: >
+    A structured JSON array showing Portuguese (Brazil) files and their required updates:
+
+    ```json
+    [
+        {
+          "FILE_PATH": file_path_1,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1,
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "Portuguese (Brazil) translation of the Configuration Steps section content..." 
+        },
+        {
+          "FILE_PATH": file_path_2,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1, 
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "Portuguese (Brazil) translation of the What is Crew Studio section content..."
+        },
+        {
+          "FILE_PATH": file_path_3,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1, 
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "Portuguese (Brazil) translation of the Default Embedding section content..."
+        }
+    ]
+    ```
+    Where 
+    FILE_PATH : File which basically will be getting changed
+    CONTENT_TO_BE_DELETED_START_LINE : This basically will represent the line number from which data will be erased
+    CONTENT_TO_BE_DELETED_END_LINE : This basically will represent the line number till which data will be erased
+    NEW_CONTENT : This will represent the new content which needs to be added 
+
+    Each entry shows the Portuguese (Brazil) file path with an array of sections that need updates, including the exact line ranges to replace and the new Portuguese (Brazil) translated content.
+  agent: portuguese_brazil_translator_agent
+  context: [analyze_branch_documentation_changes_task]
+
+
+file_content_editor_and_git_commiter_task:
+  description: >
+    Process the Korean and Portuguese (Brazil) translation updates from the previous tasks and apply each content change using the File Content Updater Tool. You will:
+
+    1. **Parse the Korean and Portuguese (Brazil) translation updates** received from the Korean Translator and Postuguese Brazil Translator Agents
+    2. **Apply changes systematically** using the File Content Updater Tool for each section update. Call the tool every time you want to make a change on any particular file.
+    3. **Validate each change** and provide detailed success/failure reporting
+    4. **Commit changes to GitHub** using the GitHub commit tool with a descriptive commit message that includes:
+    - Summary of translation updates applied
+    - List of files modified
+    - Specific sections that were translated
+    - Reference to the source branch/file that triggered the updates
+
+    **Input Format Expected:**
+    ```json
+    [
+        {
+          "FILE_PATH": FILE TO BE CHANGED_1,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1,
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "New Content 1" 
+        },
+        {
+          "FILE_PATH": FILE TO BE CHANGED_2,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1, 
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "New Content 2" 
+        },
+        {
+          "FILE_PATH": FILE TO BE CHANGED_3,
+          "CONTENT_TO_BE_DELETED_START_LINE": -1, 
+          "CONTENT_TO_BE_DELETED_END_LINE": -1, 
+          "NEW_CONTENT": "New Content 3" 
+        }
+    ]
+    ```
+
+    **Processing Steps:**
+    1. FileContentUpdaterTool Tool can make only one change at a time, you will need to call this multiple times to make all the changes,
+    2. This is your feature branch {branch_name}
+    3. This is the file path which you are going to change, understand the tool output, you will get this from there.
+    4. After updating all the changes, you need to commit the changes as well, use the GitCommitTool for that.
+  expected_output: >
+    A comprehensive report showing the complete results of applying all translation changes and the Git commit details:
+    In this format 
+    Final Output: - Korean Translation Applied:                                                                                                             
+    - File: KOREAN_FILE_CHANGED_PATH                                                                                     
+     - Lines Changed: START_LINE - END_LINE                                                                                                                            
+     - New Content: "NEW KOREAN CONTENT"
+                                                                                                                                                           
+    - Portuguese (Brazil) Translation Applied:                                                                                                              
+     - File: PORTUGUESE_FILE_CHANGED_PATH                                                     
+     - Lines Changed: START_LINE - END_LINE                                                                                                                        
+     - New Content: "NEW PORTUGUESE BRAZIL CONTENT"
+                                                                                                                                                           
+    - Git Commit Summary:                                                                                                                                   
+     - Feature Branch: BRANCH_NAME                                                                                        
+     - Committed Files:                                                                                                                                    
+       - KOREAN_FILE_CHANGED_PATH                                                                                           
+       - PORTUGUESE_FILE_CHANGED_PATH                                                                              
+     - Commit Message: "COMMIT - MESSAGE"
+  agent: file_content_editor_and_git_commiter_agent
+  context: [korean_documentation_translator_task,portuguese_brazil_documentation_translator_task]
+
+  
