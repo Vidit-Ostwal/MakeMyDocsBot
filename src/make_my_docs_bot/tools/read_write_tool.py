@@ -54,7 +54,7 @@ class FileContentUpdaterTool(BaseTool):
         new_lines = [line + "\n" if not line.endswith("\n") else line for line in new_content.splitlines()]
 
         # Replace the specified range
-        updated_lines = lines[: start] + ["\n"] + new_lines + ["\n"] + lines[end:]
+        updated_lines = lines[: start] + ["\n"] + new_lines + ["\n"] + lines[end + 1:]
 
         # Write updated file
         with open(file_path, "w", encoding="utf-8") as f:

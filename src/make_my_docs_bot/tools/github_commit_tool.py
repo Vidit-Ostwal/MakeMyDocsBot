@@ -30,12 +30,15 @@ class GitCommitTool(BaseTool):
     ) -> str:
         """Perform git checkout, add files, and commit."""
         try:
+            # return {"message": f"Changes committed to branch '{feature_branch}' successfully........."}
             # Checkout the branch
+            parent_dir = os.path.dirname(os.getcwd())
             subprocess.run(
                 ["git", "checkout", feature_branch], 
                 check=True,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
+                stderr=subprocess.DEVNULL,
+                cwd=parent_dir
             )
 
             # Add files
@@ -52,7 +55,8 @@ class GitCommitTool(BaseTool):
                 ["git", "add"] + files_to_commit,
                 check=True,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
+                stderr=subprocess.DEVNULL,
+                cwd=parent_dir
             )
             print("✅ Files successfully added to staging area.")
 
@@ -61,7 +65,8 @@ class GitCommitTool(BaseTool):
                 ["git", "commit", "-m", commit_message],
                 check=True,
                 stdout=subprocess.DEVNULL,
-                stderr=subprocess.DEVNULL
+                stderr=subprocess.DEVNULL,
+                cwd=parent_dir
             )
             print(f"✅ Successfully committed with message: '{commit_message}'")
 

@@ -8,6 +8,7 @@ import os
 from datetime import datetime
 import subprocess
 import re
+from make_my_docs_bot.tools.index_markdown import index_markdown_lines as index_markdown_lines_global
 
 class BranchChangeAnalyzerToolInput(BaseModel):
     """Input schema for Branch Change Analyzer Tool."""
@@ -41,14 +42,13 @@ class BranchChangeAnalyzerTool(BaseTool):
 
         changed_lines = []
         for hunk in re.finditer(r"@@ -\d+(?:,\d+)? \+(\d+)(?:,(\d+))? @@", diff_text):
-            start = int(hunk.group(1))
-            length = int(hunk.group(2) or 1)
-            changed_lines.append((start - 1, start + length - 2)) # -2 because end_index is included in this search
+            start = int(hunk.group(1)) - 1 
+            length = int(hunk.group(2) or 1) - 1
+            changed_lines.append((start, start + length)) # -2 because end_index is included in this search
 
         changed_lines = changed_lines[::-1]
         return changed_lines
     
-
     def make_my_object(self, object, full_object_content = True):
         return {
             "level": object['level'],
@@ -57,127 +57,28 @@ class BranchChangeAnalyzerTool(BaseTool):
             "full_context_flag": full_object_content
         }
 
-
+    # Both start_index and end_index are to be included in the final list
     def find_the_object(self, object, start_index, end_index):
-        if object['end_line'] <= start_index or object['start_line'] > end_index:
+        if not (start_index >= object['start_line'] and end_index <= object['end_line']):
             return None
         
-        for child_index in object['children_index']:
-            if child_index in list(range(start_index, end_index+1)):
-                return self.make_my_object(object, True)
+
+        # Context ending before the first_children_starts 
+        if len(object['children']) and start_index >= object['start_line'] and end_index < object['first_children_start_line']:
+            return self.make_my_object(object, False)
         
+
+        # Checking the childrens
         for child in object['children']:
             child_result = self.find_the_object(child, start_index, end_index)
             if child_result is not None:
                 return child_result
+
+        return self.make_my_object(object, True)
         
-        if len(object['children']) and start_index >= object['start_line'] and end_index < object['first_children_start_line']:
-            return self.make_my_object(object, False)
-        
-        if start_index >= object['start_line'] and end_index < object['end_line']:
-            return self.make_my_object(object, True)
-        
-        return None
 
-
-    def index_markdown_lines(self,lines):
-        index = [{
-            "level": 1,
-            "title": "Start of the page",
-            "start_line": 0,
-            "end_line": None,
-            "first_children_start_line": None,
-            "before_first_children_content": None,
-            "content": None,
-            "children_index" : [],
-            "children" : []
-        }]
-
-        total_lines = len(lines)
-        in_code_block = False  # Track whether we’re inside a fenced code block
-
-        # Step 1: collect all headings with their start lines
-        for i, line in enumerate(lines, start=0):
-            stripped = line.strip()
-
-            # Detect code block start/end
-            if stripped.startswith("```"):
-                in_code_block = not in_code_block
-                continue  # Don’t treat the ``` line itself as a heading
-
-            # Skip headings inside code blocks
-            if in_code_block:
-                continue
-
-            if stripped.startswith("#"):
-                # Count heading level (number of leading #)
-                level = stripped.count("#", 0, stripped.find(" ")) if " " in stripped else stripped.count("#")
-                title = stripped.strip("# ").strip()
-                index.append({
-                    "level": level,
-                    "title": title,
-                    "start_line": i+1,
-                    "end_line": None,
-                    "first_children_start_line": None,
-                    "before_first_children_content": None,
-                    "content": None,
-                    "children_index" : [],
-                    "children": [],
-                })
-
-        # Step 2: determine end_line for each heading
-        for j in range(len(index)):
-            current_level = index[j]["level"]
-            current_start = index[j]["start_line"]
-            first_children_start_line = index[j]["first_children_start_line"]
-
-            # Find the next heading with same or higher level
-            next_start = None
-
-            for k in range(j + 1, len(index)):
-                if first_children_start_line is None:
-                    first_children_start_line = index[k]['start_line']
-                if index[k]["level"] <= current_level:
-                    next_start = index[k]["start_line"]
-                    break
-
-            # If found, end is just before next heading
-            first_children_start_line = (first_children_start_line - 1) if first_children_start_line else total_lines
-            end_line = (next_start - 1) if next_start else total_lines
-
-            index[j]["first_children_start_line"] = first_children_start_line
-            index[j]["end_line"] = end_line
-
-            # Extract content between start_line and end_line (exclusive of heading)
-            content_lines = lines[current_start:end_line]
-            index[j]["content"] = "".join(content_lines).strip()
-
-
-            # Extract content between start_line and first_children_start_line (exclusive of heading)
-            content_lines = lines[current_start:first_children_start_line]
-            index[j]["before_first_children_content"] = "".join(content_lines).strip()
-
-        # Step 3: Build hierarchy (nest children)
-        root = []
-        stack = []
-
-        for item in index:
-            # While stack has items and top level >= current level, pop it
-            while stack and stack[-1]["level"] >= item["level"]:
-                stack.pop()
-
-            if stack:
-                # Current item is child of stack top
-                stack[-1]["children_index"].append(item['start_line']-1)
-                stack[-1]["children"].append(item)
-            else:
-                # This is a top-level item
-                root.append(item)
-
-            # Push current item to stack
-            stack.append(item)
-
-        return root[0]
+    def index_markdown_lines(self, lines):
+        return index_markdown_lines_global(lines)
 
 
     def _run(self, feature_branch: str, file_path: str) -> str:
@@ -190,22 +91,12 @@ class BranchChangeAnalyzerTool(BaseTool):
 
         parent_dir = os.path.dirname(os.getcwd())
         file_path = os.path.join(parent_dir, file_path)
-        
-        with open(file_path, "r", encoding="utf-8") as f:
-            lines = f.readlines()
 
-        index = self.index_markdown_lines(lines)
-        
-        with open(file_path.replace(".mdx",".json"), "w") as f:
-            json.dump(index, f, indent=4) 
-
+        index = self.index_markdown_lines(file_path)
 
         changed_section_metadata = []
         for changed_line in changed_lines:
             section = self.find_the_object(index, changed_line[0],changed_line[1])
             changed_section_metadata.append(section)
         
-        
-        return {
-            "SECTIONS_CHANGED" : changed_section_metadata,
-        }
+        return changed_section_metadata

@@ -1,3 +1,109 @@
+validate_file_structure_task:
+  description: >
+    Perform comprehensive index mapping and structural validation between the English source file and its Korean and Portuguese - Brazil translation counterparts. You will:
+
+    1. **Analyze source file structure** from the English documentation changed file {file_path}
+    2. **Map section indexes** between English and Korean, Portuguese-Brazil files using your custom index mapping tools
+    3. **Validate structural consistency** including:
+      - Section hierarchy levels (H1, H2, H3, etc.)
+      - Section titles and their positioning
+      - Overall document structure alignment
+      - Index mapping accuracy between source and translation files
+    4. **Identify structural discrepancies** such as:
+      - Missing sections in Korean, Portuguese (Brazil) files
+      - Mismatched section hierarchies
+      - Incorrect index mappings
+      - Inconsistent document organization
+    5. For identifying the where the heading should be added always look at the end_line of the previous section
+    6. It could also be a case you don't find any inconsistency, in those cases just output a empty list
+    7. For identifying which sections are missing, keep following points in mind
+      - Use the English file as the reference for comparison.
+      - Check each translation file (like Korean, Portuguese, etc.) to ensure it has all sections and subsections found in the English version, in the same order and hierarchy level.
+      - If all sections match exactly — return an empty list of changes in the format below.
+      - If any section or subsection is missing, you must output one SectionChange object per missing section.
+    
+    Use your custom File Indexing Tool with {file_path} to get index information across the English, Korean and Portuguese (Brazil) documenation, Analyze that carefully and find what sections are missing in the Korean and Portuguese Files.
+
+  expected_output: >
+    A structured JSON array showing changes which are required in the files to make the index consistent
+
+    ```json
+    [
+      {
+        "FILE_PATH": file_path_1,
+        "PREVIOUS_SECTION" : Previous Section
+        "PREVIOUS_SECTION_START_LINE": Line number where the previous section started, 
+        "PREVIOUS_SECTION_END_LINE": Line number where the previous section ended, 
+        "NEXT_SECTION" : Next Section
+        "NEXT_SECTION_START_LINE": Line number where the next section will start
+        "NEXT_SECTION_END_LINE": Line number where the next section will end 
+        "NEW_HEADING_TRANSLATED": New heading which needs to be inserted in the language (Korean or Portuguese(Brazil)), don't include English component here. Korean or Portuguese (Brazil) depending on the whether Previous sections are Korean or in Portuguese (Brazil)
+        "LEVEL": The level of the heading (1/2/3/4)
+        "REASON" "Reason here how you find out the line number, mention the previous section and following sections start_line and end_line "
+      }
+    ]
+    ```
+    Where 
+    FILE_PATH : File which basically will be getting changed
+    PREVIOUS_SECTION : Previous Section
+    PREVIOUS_SECTION_START_LINE : Line number where the previous section started, 
+    PREVIOUS_SECTION_END_LINE : Line number where the previous section ended, 
+    NEXT_SECTION : Next Section
+    NEXT_SECTION_START_LINE : Line number where the next section will start
+    NEXT_SECTION_END_LINE : Line number where the next section will end 
+    NEW_HEADING_TRANSLATED : New heading which needs to be inserted, don't include English component here, should be Korean or Portuguese (Brazil) depending on the whether Previous sections are Korean or in Portuguese (Brazil)
+    REASON : Reason how did you find out the HEADING_TO_BE_ADDED_LINE number
+
+    Each entry shows the section which needs to be inserted to make the indexing consistent,
+  agent: index_mapping_specialist
+  context: []
+  
+
+index_fixing_task:
+  description: >
+    Based on the structural analysis and validation report from the Index Mapping Specialist, implement all necessary corrections to ensure Korean translation files maintain perfect structural alignment with English source files. Your responsibilities include:
+
+    1. **Review validation report** from the Index Mapping Specialist to understand required corrections
+    2. **Execute structural fixes** using custom read-write tools:
+      - Add missing sections to Korean files
+      - Adjust section hierarchy levels (H1, H2, H3, etc.)
+      - Correct index mapping inconsistencies
+      - Reorganize content structure to match source files
+      - Fix section title positioning and alignment
+    3. **Validate corrections** after implementation:
+      - Confirm structural alignment with source files
+      - Verify index mapping accuracy
+      - Ensure all identified issues are resolved
+
+    **Input Format Expected:**
+    ```json
+    [
+      {
+        "FILE_PATH": file_path_1,
+        "PREVIOUS_SECTION" : Previous Section
+        "PREVIOUS_SECTION_START_LINE": Line number where the previous section started, 
+        "PREVIOUS_SECTION_END_LINE": Line number where the previous section ended, 
+        "NEXT_SECTION" : Next Section
+        "NEXT_SECTION_START_LINE": Line number where the next section will start
+        "NEXT_SECTION_END_LINE": Line number where the next section will end 
+        "NEW_HEADING": "Heading which was missing in the Korean or Portuguese(Brazil) format"
+        "LEVEL": The level of the heading (1/2/3/4)
+        "REASON" "Reason here how you find out the line number, mention the previous section and following sections start_line and end_line "
+      }
+    ]
+    ```
+
+    **Processing Steps:**
+    1. FileIndexFixerTool Tool can make only one change at a time, you will need to call this multiple times to make all the changes.
+
+    Use your specialized FileIndexFixerTool tools to make precise modifications to other files, ensuring they are structurally consistent with their English counterparts before translation content updates begin.
+    You need to analyze the output of the validate_file_structure_task task, there could be edge case that you have recieved an empty list of changes, which means that there is absolutely no incosistency in the previous files and you are good to go. In that case you don't need to call the tool as there is not changes required.
+  expected_output: >
+    A Simple summary in markdown format
+  agent: index_mapping_fixer
+  context: [validate_file_structure_task]
+
+
 analyze_branch_documentation_changes_task:
   description: >
     Analyze the specific documentation file at {file_path} in branch {branch_name} to identify all content changes and modifications. The tool requires the branch name and changed file path as input and will automatically:
@@ -12,8 +118,7 @@ analyze_branch_documentation_changes_task:
   expected_output: >
     A structured JSON object showing the analysis of the specific file at {file_path}, it will be a list of sections changed in this particular file {file_path}:
     ```json
-    {
-      "SECTIONS_CHANGED": [
+     [
         {
             "level": 1 / 2 / 3 / 4,
             "title": "The title / heading of the section changed",
@@ -21,12 +126,7 @@ analyze_branch_documentation_changes_task:
             "full_context_flag": True / False
         }
       ]
-    }
     ```
-
-    The output should contain:
-    - **SECTIONS_CHANGED**: Object with list of changed sections
-
     Each changed section should include:
     - **level**: The level of the changed (Title, Sub-Title, Heading/ Sub-Heading)
     - **title**: The section title/heading text
@@ -35,6 +135,8 @@ analyze_branch_documentation_changes_task:
 
     Provide comprehensive analysis of all modifications within the specified file.
   agent: documentation_change_analyzer
+  context: []
+
 
 
 korean_documentation_translator_task:
@@ -45,21 +147,20 @@ korean_documentation_translator_task:
     2. **Match sections** between English changes (from SECTIONS_CHANGED) and Korean files using section title and context
     3. **Generate Korean translations** of the changed English content
     4. **Produce structured output** with exact line ranges and replacement content
+    5. Include the code block whenever you find them in English documenation context
      
     Your translation mapping tool will provide the releavnt sections information with the existing context. Use this to identify which Korean sections correspond to the changed English sections.
 
     **Input Data Structure:**
     ```json
-    {
-      "SECTIONS_CHANGED": [
-        {
-            "level": 1 / 2 / 3 / 4,
-            "title": "The title / heading of the section changed",
-            "context": "New context",
-            "full_context_flag": True / False
-        }
-      ]
-    }
+    [
+      {
+          "level": 1 / 2 / 3 / 4,
+          "title": "The title / heading of the section changed",
+          "context": "New context",
+          "full_context_flag": True / False
+      }
+    ]
     ```
 
     Call your tool with the each object in the sections_changed to get relevant Korean file indexing and mapping, understand the result of the tool and your input, match and translate the sections.
@@ -108,22 +209,21 @@ portuguese_brazil_documentation_translator_task:
     2. **Match sections** between English changes (from SECTIONS_CHANGED) and Portuguese Brazil files using section title and context
     3. **Generate Portuguese (Brazil) translations** of the changed English content
     4. **Produce structured output** with exact line ranges and replacement content
+    5. Include the code block whenever you find them in English documenation context
 
 
     Your translation mapping tool will provide the releavnt sections information with the existing context. Use this to identify which Portuguese (Brazil) sections correspond to the changed English sections.
 
     **Input Data Structure:**
     ```json
-    {
-      "SECTIONS_CHANGED": [
-        {
-            "level": 1 / 2 / 3 / 4,
-            "title": "The title / heading of the section changed",
-            "context": "New context",
-            "full_context_flag": True / False
-        }
-      ]
-    }
+    [
+      {
+          "level": 1 / 2 / 3 / 4,
+          "title": "The title / heading of the section changed",
+          "context": "New context",
+          "full_context_flag": True / False
+      }
+    ]
     ```
 
     Call your tool with the each object in the sections_changed to get relevant Portuguese (Brazil) file indexing and mapping, understand the result of the tool and your input, match and translate the sections.
