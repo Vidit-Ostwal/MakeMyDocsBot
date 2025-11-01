@@ -1,54 +1,84 @@
-# MakeMyDocsBot Crew
+# MakeMyDocsBot
 
-Welcome to the MakeMyDocsBot Crew project, powered by [crewAI](https://crewai.com). This template is designed to help you set up a multi-agent AI system with ease, leveraging the powerful and flexible framework provided by crewAI. Our goal is to enable your agents to collaborate effectively on complex tasks, maximizing their collective intelligence and capabilities.
+## What is MakeMyDocsBot?
+
+**MakeMyDocsBot** is a smart documentation synchronization bot designed to help maintainers keep multi-language documentation up-to-date across feature branches.  
+Built using **crewAI**, it automates the process of detecting documentation changes in English and synchronizing them into other supported languages — currently **Korean** and **Portuguese (Brazil)**.
+
+The bot fits seamlessly into your workflow, ensuring that new features stay consistently documented across all supported locales — reducing manual overhead and improving release quality.
+
+### 🎥 Overview Video  
+See how MakeMyDocsBot works, how it fits into the ecosystem, and the agents & tasks that power it.
+
+<div style="position: relative; padding-bottom: 64.98194945848375%; height: 0;"><iframe src="https://www.loom.com/embed/a695e79df202473ab5acd3c6f6f8c585" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe></div>
+
+[▶️ Watch on Loom](https://www.loom.com/share/a695e79df202473ab5acd3c6f6f8c585)
+
+<video src="demo-overview.mp4" controls width="800"></video>  
+*MakeMyDocsBot — Overview & Architecture*
+
+---
+
+## DEMO #1 — English → Korean Synchronization
+
+This demo showcases MakeMyDocsBot automatically translating and synchronizing English documentation updates into **Korean**.  
+It detects new feature branch changes, processes updates, and creates PRs with localized content — all autonomously.
+
+[![Watch Demo 1](https://cdn.loom.com/sessions/thumbnails/demo1-placeholder.jpg)](https://www.loom.com/share/demo1)  
+*Demo #1: English → Korean Documentation Sync*
+
+---
+
+## DEMO #2 — English → Portuguese (Brazil) Synchronization
+
+This demo highlights the synchronization flow for **Portuguese (Brazil)** documentation.  
+The bot detects new commits in feature branches, processes English doc updates, and pushes the translated changes automatically.
+
+[![Watch Demo 2](https://cdn.loom.com/sessions/thumbnails/demo2-placeholder.jpg)](https://www.loom.com/share/demo2)  
+*Demo #2: English → Portuguese (Brazil) Documentation Sync*
+
+---
 
 ## Installation
 
-Ensure you have Python >=3.10 <3.14 installed on your system. This project uses [UV](https://docs.astral.sh/uv/) for dependency management and package handling, offering a seamless setup and execution experience.
+Before you begin, ensure you have **Python >=3.10 <3.14** installed.
 
-First, if you haven't already, install uv:
-
+### 1. Install [UV](https://docs.astral.sh/uv/)
 ```bash
 pip install uv
 ```
 
-Next, navigate to your project directory and install the dependencies:
-
-(Optional) Lock the dependencies and install them by using the CLI command:
+### 2. Sync Dependencies
+In your project root:
+```bash
+uv sync
+```
+Alternatively:
 ```bash
 crewai install
 ```
-### Customizing
 
-**Add your `OPENAI_API_KEY` into the `.env` file**
+> Dependencies are defined in `pyproject.toml` and locked via `uv.lock` for reproducibility.
 
-- Modify `src/make_my_docs_bot/config/agents.yaml` to define your agents
-- Modify `src/make_my_docs_bot/config/tasks.yaml` to define your tasks
-- Modify `src/make_my_docs_bot/crew.py` to add your own logic, tools and specific args
-- Modify `src/make_my_docs_bot/main.py` to add custom inputs for your agents and tasks
+### 3. Add Environment Variables
+Create a `.env` file in your project root:
+```bash
+OPENAI_API_KEY=your_api_key_here
+OPENAI_MODEL_NAME=gpt-4o-mini
+```
+
+---
 
 ## Running the Project
 
-To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
+To launch MakeMyDocsBot and start synchronizing multilingual documentation:
 
 ```bash
-$ crewai run
+crewai run
 ```
 
-This command initializes the make-my-docs-bot Crew, assembling the agents and assigning them tasks as defined in your configuration.
+This command initializes the MakeMyDocsBot crew, activates its agents, and begins the documentation synchronization process as defined in your configuration files.
 
-This example, unmodified, will run the create a `report.md` file with the output of a research on LLMs in the root folder.
+---
 
-## Understanding Your Crew
-
-The make-my-docs-bot Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
-
-## Support
-
-For support, questions, or feedback regarding the MakeMyDocsBot Crew or crewAI.
-- Visit our [documentation](https://docs.crewai.com)
-- Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
-- [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
-- [Chat with our docs](https://chatg.pt/DWjSBZn)
-
-Let's create wonders together with the power and simplicity of crewAI.
+✨ *Empowering maintainers to focus on innovation — while MakeMyDocsBot keeps your documentation perfectly in sync.*
