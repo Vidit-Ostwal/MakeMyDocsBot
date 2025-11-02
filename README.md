@@ -120,5 +120,7 @@ Copy the entire content in the [pre-push-script](https://github.com/Vidit-Ostwal
 Move the entire MAKE_MY_DOCS_BOT inside the CrewAI repository.
 This is how it should look after moving it to CrewAI repository.
 
+![Final Strucutre](images/Final_structure.png)
+
 ---
 
