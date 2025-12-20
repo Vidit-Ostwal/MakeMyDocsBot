@@ -1,8 +1,23 @@
+## 🏆 Announcement
+
+**MakeMyDocsBot** was awarded **3rd Runner-Up** at the **CrewAI Fall Agentic AI Challenge** 🎉  
+
+👉 **LinkedIn Post:** [Post](https://www.linkedin.com/posts/viditostwal_please-join-us-in-congratulating-vidit-ostwal-activity-7407046132935290881-fXyF?utm_source=share&utm_medium=member_desktop&rcm=ACoAAC7XK-wBpMJVEdMqSRQ86hXsZbgA2jZA3aw)
+
+
+If you’re interested in the *why* and *how* behind MakeMyDocsBot, I’ve written a detailed Substack blog that walks through:
+- The core problem with multilingual documentation
+- Agent design and responsibilities
+- Indexing logic and edge cases discovered during development
+- How the final system came together
+
+👉 **Substack Blog:** [Building MakeMyDocsBot](https://viditostwal.substack.com/p/building-makemydocsbot)
+---
+
+
 # MakeMyDocsBot
 
 ```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
  ███╗   ███╗ █████╗ ██╗  ██╗███████╗    ███╗   ███╗██╗   ██╗
  ████╗ ████║██╔══██╗██║ ██╔╝██╔════╝    ████╗ ████║╚██╗ ██╔╝
  ██╔████╔██║███████║█████╔╝ █████╗      ██╔████╔██║ ╚████╔╝ 
@@ -16,8 +31,6 @@
  ██║  ██║██║   ██║██║     ╚════██║    ██╔══██╗██║   ██║   ██║   
  ██████╔╝╚██████╔╝╚██████╗███████║    ██████╔╝╚██████╔╝   ██║   
  ╚═════╝  ╚═════╝  ╚═════╝╚══════╝    ╚═════╝  ╚═════╝    ╚═╝   
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ```
 
 ## What is MakeMyDocsBot?
