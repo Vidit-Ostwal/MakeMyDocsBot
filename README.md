@@ -47,7 +47,7 @@ See how MakeMyDocsBot works, how it fits into the ecosystem, and the agents & ta
 [![Architecture Overview](images/preview_video_1.png)](https://www.loom.com/share/a695e79df202473ab5acd3c6f6f8c585)
 
 *MakeMyDocsBot — Overview & Architecture*
-![AMP Platform](images/amp_platform.png)  
+![AMP Platform](images/Flow.png)  
 
 
 ---
