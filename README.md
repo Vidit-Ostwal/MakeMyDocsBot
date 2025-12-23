@@ -13,6 +13,12 @@ If you’re interested in the *why* and *how* behind MakeMyDocsBot, I’ve writt
 
 👉 **Substack Blog:** [Building MakeMyDocsBot](https://viditostwal.substack.com/p/building-makemydocsbot)
 
+👉 **Notebook LM Summary:**
+
+<video src="video/Building_MakeMyDocsBot.mp4" controls width="100%"></video>
+
+*A quick Notebook LM–generated walkthrough explaining the full MakeMyDocsBot architecture and flow.*
+
 ---
 
 
