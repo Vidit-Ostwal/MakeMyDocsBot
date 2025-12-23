@@ -15,7 +15,7 @@ If you’re interested in the *why* and *how* behind MakeMyDocsBot, I’ve writt
 
 👉 **Notebook LM Summary:**
 
-[![Watch the video](images/NotebookLM.png)](video/Building_MakeMyDocsBot.mp4)
+[![Watch the video](images/NotebookLM.png)](https://notebooklm.google.com/notebook/4a4badd3-60dc-45e6-8417-d729d29f8caf?artifactId=cb450485-1d8f-4f41-b180-0cedebcb802c)
 
 *A quick Notebook LM–generated walkthrough explaining the full MakeMyDocsBot architecture and flow.*
 
