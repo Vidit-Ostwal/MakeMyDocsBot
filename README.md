@@ -1,6 +1,6 @@
 ## 🏆 Announcement
 
-**MakeMyDocsBot** was awarded **3rd Runner-Up** at the **CrewAI Fall Agentic AI Challenge** 🎉  
+**MakeMyDocsBot** was awarded **2nd Runner-Up** at the **CrewAI Fall Agentic AI Challenge** 🎉  
 
 👉 **LinkedIn Post:** [Post](https://www.linkedin.com/posts/viditostwal_please-join-us-in-congratulating-vidit-ostwal-activity-7407046132935290881-fXyF?utm_source=share&utm_medium=member_desktop&rcm=ACoAAC7XK-wBpMJVEdMqSRQ86hXsZbgA2jZA3aw)
 
